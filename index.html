@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rabbit - 简洁 · 抽象 · 优雅 · 高性能</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --dark: #2C3E50;
+            --light: #F7F9FC;
+            --code-bg: #1E1E1E;
+            --success: #27C93F;
+            --warning: #FFBD2E;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        /* 导航 */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            z-index: 1000;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "🐰";
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero 区域 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 6rem 5% 4rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .motto {
+            font-size: 1.1rem;
+            font-style: italic;
+            opacity: 0.9;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border-left: 3px solid var(--primary);
+            background: rgba(255,255,255,0.1);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255,107,107,0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border-color: white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(39,201,63,0.3);
+        }
+
+        /* 下载区域 */
+        .download-section {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .download-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .download-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .download-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .download-btn .icon {
+            font-size: 1.5rem;
+        }
+
+        .download-btn .info {
+            text-align: left;
+        }
+
+        .download-btn .label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .download-btn .version {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .system-detect {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .install-command {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--code-bg);
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            position: relative;
+            text-align: left;
+        }
+
+        .install-command code {
+            color: #C3E88D;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* 代码演示 */
+        .code-showcase {
+            margin-top: 4rem;
+            width: 100%;
+            max-width: 700px;
+            background: var(--code-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .code-header {
+            background: #333;
+            padding: 0.75rem 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #FF5F56; }
+        .dot-yellow { background: #FFBD2E; }
+        .dot-green { background: #27C93F; }
+
+        .code-content {
+            padding: 1.5rem;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #ECEFF1;
+            overflow-x: auto;
+        }
+
+        .keyword { color: #C792EA; }
+        .function { color: #82AAFF; }
+        .string { color: #C3E88D; }
+        .comment { color: #546E7A; }
+        .number { color: #F78C6C; }
+
+        /* 特性区域 */
+        .features {
+            padding: 6rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 4rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* 双版本展示 */
+        .dual-impl {
+            background: var(--dark);
+            color: white;
+            padding: 6rem 5%;
+        }
+
+        .dual-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .impl-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: var(--primary);
+        }
+
+        .impl-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .impl-text h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+
+        .impl-list {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .impl-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .impl-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+        }
+
+        /* 代码对比 */
+        .comparison {
+            padding: 6rem 5%;
+            background: white;
+        }
+
+        .compare-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .code-block {
+            background: #F5F7FA;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .code-block h4 {
+            background: #E8ECF1;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .code-block pre {
+            padding: 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .vs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* 文档入口 */
+        .docs {
+            padding: 6rem 5%;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .docs-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .doc-card {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--dark);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .doc-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .doc-card .emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .doc-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .doc-card p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        .badge-green {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .badge-yellow {
+            background: #FFF3CD;
+            color: #856404;
+        }
+
+        .badge-red {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+
+        /* 下载页面专用样式 */
+        .download-page {
+            padding: 8rem 5% 4rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .download-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .download-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .download-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .download-card .platform {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exe-list {
+            list-style: none;
+        }
+
+        .exe-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #F7F9FC;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .exe-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .exe-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .exe-meta {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .download-link {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: background 0.3s;
+        }
+
+        .download-link:hover {
+            background: #E55A5A;
+        }
+
+        /* 页脚 */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 5%;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .impl-content,
+            .compare-grid,
+            .docs-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .vs {
+                transform: rotate(90deg);
+                margin: 1rem 0;
+            }
+
+            .download-options {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* 动画 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--dark);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 9999;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航 -->
+    <nav>
+        <div class="logo">Rabbit</div>
+        <ul class="nav-links">
+            <li><a href="#features">特性</a></li>
+            <li><a href="#dual">双版本</a></li>
+            <li><a href="#download">下载</a></li>
+            <li><a href="#docs">文档</a></li>
+            <li><a href="https://github.com/rabbit-language">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Rabbit</h1>
+            <p class="tagline">简洁 · 抽象 · 优雅 · 高性能</p>
+            
+            <blockquote class="motto">
+                "程序员没有最终解释权，<br>
+                最终解释权归<a href="https://github.com/rabbit-language" 代码>所有。"
+            </blockquote>
+            
+            <div class="cta-buttons">
+                <a href="#download" class="btn btn-success">⬇️ 下载 EXE</a>
+                <a href="https://try.rabbit-lang.org" class="btn btn-primary">在线运行</a>
+                <a href="#docs" class="btn btn-secondary">阅读文档</a>
+            </div>
+        </div>
+
+        <!-- 下载区域 -->
+        <div class="download-section" id="download">
+            <h3 class="download-title">🚀 快速下载</h3>
+            
+            <div class="download-options">
+                <a href="https://github.com/rabbit-language/rabbit-py.exe" class="download-btn" download>
+                    <span class="icon">🐍</span>
+                    <div class="info">
+                        <div class="label">快速开发版</div>
+                        <div class="version">rabbit-py.exe</div>
+                    </div>
+                </a>
+                
+                <a href="https://github.com/rabbit-language/rabbit-c.exe" class="download-btn" download>
+                    <span class="icon">⚡</span>
+                    <div class="info">
+                        <div class="label">高性能版</div>
+                        <div class="version">rabbit-c.exe</div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="system-detect" id="systemInfo">
+                🔍 检测系统中...
+            </div>
+            
+            <div class="install-command">
+                <code id="installCmd"># 下载后双击运行，或添加到 PATH</code>
+                <button class="copy-btn" onclick="copyToClipboard()">复制</button>
+            </div>
+        </div>
+
+        <!-- 代码展示 -->
+        <div class="code-showcase floating">
+            <div class="code-header">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+            </div>
+            <div class="code-content">
+<span class="comment"># Rabbit - 像说话一样写代码</span>
+<span class="keyword">fun</span> <span class="function">fib</span> n<span class="keyword">:</span> <span class="keyword">Int</span><span class="keyword">:</span> <span class="keyword">Int</span><span class="keyword">:</span>
+    <span class="keyword">if</span> n <span class="keyword">&lt;=</span> <span class="number">1</span><span class="keyword">:</span>
+        <span class="keyword">return</span> n
+    <span class="keyword">return</span> <span class="function">fib</span>(n <span class="keyword">-</span> <span class="number">1</span>) <span class="keyword">+</span> <span class="function">fib</span>(n <span class="keyword">-</span> <span class="number">2</span>)
+
+<span class="keyword">fun</span> <span class="function">main</span><span class="keyword">:</span>
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span><span class="keyword">..</span><span class="number">10</span><span class="keyword">:</span>
+        <span class="function">print</span>(<span class="string">"fib({i}) = {fib(i)}"</span>)
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性 -->
+    <section class="features" id="features">
+        <h2 class="section-title">为什么选择 Rabbit？</h2>
+        <p class="section-subtitle">融合 Python 的简洁、Java 的性能、Rust 的安全</p>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>极简语法</h3>
+                <p>无括号、无分号、无花括号。缩进即结构，代码即意图。新手 30 分钟上手，专家写得更少。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>双模式编译</h3>
+                <p>Python 版快速开发，即时验证想法；C 版极致性能，生产环境部署。一套代码，两种运行。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>静态类型推断</h3>
+                <p>写 `x = 10`，编译器知道是 Int。错误在编译期捕获，而不是生产环境崩溃。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>高性能并发</h3>
+                <p>轻量级线程 + async/await，轻松处理百万连接。性能对标 Go，语法比 Python 简单。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3>零成本抽象</h3>
+                <p>高阶函数、泛型、模式匹配，编译后零开销。用优雅的代码，跑极快的程序。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3>民主开源</h3>
+                <p>社区驱动设计，RFC 公开讨论。MIT + Apache 2.0 双许可，个人和企业都能自由使用。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 双版本 -->
+    <section class="dual-impl" id="dual">
+        <div class="dual-container">
+            <h2 class="section-title" style="color: white; margin-bottom: 3rem;">双语言实现</h2>
+            
+            <div class="impl-content">
+                <div class="impl-text">
+                    <h3>🐍 Rabbit-Py</h3>
+                    <p>Python 实现，快速迭代，即时反馈。</p>
+                    <ul class="impl-list">
+                        <li>新特性当天可用</li>
+                        <li>源码可读，适合学习</li>
+                        <li>直接调用 Python 生态</li>
+                        <li>pip install 即装即用</li>
+                    </ul>
+                    <p style="margin-top: 1rem; opacity: 0.8;">
+                        <a href="https://github.com/rabbit-language/rabbit-py.exe" class="btn btn-success" download>下载 rabbit-py.exe</a>
+                    </p>
+                </div>
+                
+                <div class="code-showcase" style="margin: 0;">
+                    <div class="code-header">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                    </div>
+                    <div class="code-content" style="font-size: 0.85rem;">
+<span class="comment"># 开发调试，即时运行</span>
+$ rabbit-py run app.rbt
+<span class="string">"Hello, Rabbit!"</span>
+
+<span class="comment"># 热重载，保存即刷新</span>
+$ rabbit-py dev --hot
+🔄 检测到变化，重新加载...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="impl-content" style="margin-top: 4rem;">
+                <div class="code-showcase" style="margin: 0;">
+                    <div class="code-header">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                    </div>
+                    <div class="code-content" style="font-size: 0.85rem;">
+<span class="comment"># 编译为机器码，独立运行</span>
+$ rabbit-c build app.rbt -o app
+✓ 编译成功 (2.3s)
+
+$ ./app
+<span class="string">"Hello, Rabbit!"</span>
+<span class="comment"># 性能提升 50 倍</span>
+
+$ rabbit-c build --release app.rbt
+✓ 优化编译 (15.7s)
+                    </div>
+                </div>
+                
+                <div class="impl-text">
+                    <h3>⚡ Rabbit-C</h3>
+                    <p>C 实现，极致性能，生产部署。</p>
+                    <ul class="impl-list">
+                        <li>AOT 编译，零运行时开销</li>
+                        <li>LLVM 优化，对标 C++ 性能</li>
+                        <li>单二进制文件，独立分发</li>
+                        <li>嵌入式支持，裸机可跑</li>
+                    </ul>
+                    <p style="margin-top: 1rem; opacity: 0.8;">
+                        <a href="https://github.com/rabbit-language/rabbit-c.exe" class="btn btn-success" download>下载 rabbit-c.exe</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 下载详情页 -->
+    <section class="download-page" id="download-detail">
+        <h2 class="section-title">下载 Rabbit</h2>
+        <p class="section-subtitle">选择适合你的版本</p>
+        
+        <div class="download-grid">
+            <div class="download-card">
+                <h3>🐍 rabbit-py.exe</h3>
+                <p class="platform">Windows x64 | macOS | Linux</p>
+                <ul class="exe-list">
+                    <li>
+                        <div class="exe-info">
+                            <span class="exe-name">rabbit-py-v0.2.1.exe</span>
+                            <span class="exe-meta">15.3 MB | 2024-01-15</span>
+                        </div>
+                        <a href="https://github.com/rabbit-language/rabbit-py.exe" class="download-link" download>下载</a>
+                    </li>
+                    <li>
+                        <div class="exe-info">
+                            <span class="exe-name">rabbit-py-v0.2.0.exe</span>
+                            <span class="exe-meta">14.8 MB | 2024-01-01</span>
+                        </div>
+                        <a href="https://github.com/rabbit-language/rabbit-py.exe/releases/tag/v0.2.0" class="download-link">下载</a>
+                    </li>
+                </ul>
+                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                    💡 推荐新手使用，包含完整开发工具链
+                </p>
+            </div>
+            
+            <div class="download-card">
+                <h3>⚡ rabbit-c.exe</h3>
+                <p class="platform">Windows x64 | macOS | Linux</p>
+                <ul class="exe-list">
+                    <li>
+                        <div class="exe-info">
+                            <span class="exe-name">rabbit-c-v1.0.0.exe</span>
+                            <span class="exe-meta">28.7 MB | 2024-01-15</span>
+                        </div>
+                        <a href="https://github.com/rabbit-language/rabbit-c.exe" class="download-link" download>下载</a>
+                    </li>
+                    <li>
+                        <div class="exe-info">
+                            <span class="exe-name">rabbit-c-v0.9.5.exe</span>
+                            <span class="exe-meta">26.2 MB | 2023-12-20</span>
+                        </div>
+                        <a href="https://github.com/rabbit-language/rabbit-c.exe/releases/tag/v0.9.5" class="download-link">下载</a>
+                    </li>
+                </ul>
+                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                    ⚠️ 需要 LLVM 环境，推荐生产环境使用
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 代码对比 -->
+    <section class="comparison">
+        <h2 class="section-title">代码对比</h2>
+        <p class="section-subtitle">同样的功能，Rabbit 更短、更清晰</p>
+        
+        <div class="compare-grid">
+            <div class="code-block">
+                <h4>Python</h4>
+                <pre>def fib(n):
+    if n <= 1:
+        return n
+    return fib(n-1) + fib(n-2)
+
+for i in range(1, 11):
+    print(f"fib({i}) = {fib(i)}")</pre>
+            </div>
+            
+            <div class="vs">VS</div>
+            
+            <div class="code-block">
+                <h4>Rabbit</h4>
+                <pre>fun fib n: Int: Int:
+    if n <= 1: return n
+    return fib(n-1) + fib(n-2)
+
+for i in 1..10:
+    print "fib({i}) = {fib(i)}"</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- 文档入口 -->
+    <section class="docs" id="docs">
+        <h2 class="section-title">选择你的学习路径</h2>
+        <p class="section-subtitle">三档文档，满足不同需求</p>
+        
+        <div class="docs-grid">
+            <a href="/docs/quickstart" class="doc-card">
+                <div class="emoji">🟢</div>
+                <h3>新手版</h3>
+                <p>纯纯干货，没有废话<br>30 分钟能写代码</p>
+                <span class="badge badge-green">推荐先读</span>
+            </a>
+            
+            <a href="/docs/cookbook" class="doc-card">
+                <div class="emoji">🟡</div>
+                <h3>实战版</h3>
+                <p>常见场景直接抄<br>改参数就能跑</p>
+                <span class="badge badge-yellow">有基础后</span>
+            </a>
+            
+            <a href="/docs/reference" class="doc-card">
+                <div class="emoji">🔴</div>
+                <h3>专业版</h3>
+                <p>源代码解析<br>设计哲学与边缘情况</p>
+                <span class="badge badge-red">硬核深入</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <ul class="footer-links">
+            <li><a href="https://github.com/rabbit-language">GitHub</a></li>
+            <li><a href="https://discord.gg/rabbit-lang">Discord</a></li>
+            <li><a href="https://twitter.com/rabbit_lang">Twitter</a></li>
+            <li><a href="/blog">博客</a></li>
+            <li><a href="/rfcs">RFCs</a></li>
+        </ul>
+        <p class="copyright">
+            © 2024 Rabbit Language Team. 
+            最终解释权归代码所有。
+        </p>
+    </footer>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast">已复制到剪贴板！</div>
+
+    <!-- JavaScript -->
+    <script>
+        // 检测操作系统
+        function detectOS() {
+            const userAgent = window.navigator.userAgent;
+            const platform = window.navigator.platform;
+            
+            let os = "Unknown";
+            let icon = "💻";
+            
+            if (userAgent.indexOf("Win") !== -1) {
+                os = "Windows";
+                icon = "🪟";
+            } else if (userAgent.indexOf("Mac") !== -1) {
+                os = "macOS";
+                icon = "🍎";
+            } else if (userAgent.indexOf("Linux") !== -1) {
+                os = "Linux";
+                icon = "🐧";
+            }
+            
+            return { os, icon };
+        }
+
+        // 更新系统信息
+        function updateSystemInfo() {
+            const { os, icon } = detectOS();
+            const infoEl = document.getElementById('systemInfo');
+            
+            if (os === "Windows") {
+                infoEl.innerHTML = `${icon} 检测到 ${os} 系统，推荐下载 .exe 版本`;
+            } else {
+                infoEl.innerHTML = `${icon} 检测到 ${os} 系统，请查看安装指南或使用源码编译`;
+            }
+        }
+
+        // 复制到剪贴板
+        function copyToClipboard() {
+            const text = document.getElementById('installCmd').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+            });
+        }
+
+        // 显示 Toast
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', updateSystemInfo);
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
